@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/sikozonpc/cinema/internal/utils"
+	"github.com/PreetiToppo/movie-booking/internal/utils"
 )
 
 type handler struct {
