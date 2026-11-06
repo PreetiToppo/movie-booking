@@ -1,0 +1,17 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+cinema-ticket-booking
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# IDE folders
+.vscode/
+.idea/
