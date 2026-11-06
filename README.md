@@ -1,20 +1,26 @@
 # High-Concurrency Cinema Booking System
 
+![Go CI Pipeline](https://github.com/PreetiToppo/movie-booking/actions/workflows/test.yml/badge.svg)
+
 A production-ready backend for a movie ticket booking system built in **Go**, designed to solve the classic "double-booking" concurrency problem.
 
 ## 🏗️ Architecture & Tech Stack
-- **Language:** Go (Standard Library `net/http`, `sync`)
+- **Language:** Go (Standard Library `net/http`, `sync`, `os/signal`)
 - **Database/Cache:** Redis (for distributed locking and TTL-based seat holds)
-- **Pattern:** Repository Pattern with Dependency Injection (allows swapping Redis for In-Memory/Mutex stores)
+- **Pattern:** Repository Pattern with Dependency Injection
 - **Frontend:** Vanilla JS/HTML/CSS with polling for near real-time updates
+- **Observability:** Prometheus metrics endpoint (`/metrics`)
+- **CI/CD:** GitHub Actions (Automated race-condition testing)
 
 ## 🚀 Key Features
 - **Pessimistic Locking:** Utilizes Redis `SET NX` atomic operations to ensure exactly one user can hold a specific seat at a time.
 - **Checkout Sessions (TTL):** Seats are held for 2 minutes. If the user doesn't confirm, Redis automatically releases the seat.
-- **Concurrency Tested:** Validated using `go test -race` with 100,000 simulated concurrent users attempting to book the same seat.
+- **Graceful Shutdown:** Implements `os/signal` to listen for termination signals, allowing active HTTP requests to finish before shutting down the server.
+- **Concurrency Tested:** Automated CI pipeline runs `go test -race` with 100,000 simulated concurrent users attempting to book the same seat, ensuring zero race conditions.
+- **Observability:** Exposes real-time application metrics via a Prometheus `/metrics` endpoint.
 
 ## 🛠️ How to Run Locally
-1. Start Redis:
+1. Start Redis using Docker:
    ```bash
    docker-compose up -d
 
