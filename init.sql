@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS confirmed_bookings (
+    id VARCHAR(36) PRIMARY KEY,
+    movie_id VARCHAR(50) NOT NULL,
+    seat_id VARCHAR(10) NOT NULL,
+    user_id VARCHAR(50) NOT NULL,
+    confirmed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

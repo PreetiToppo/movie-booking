@@ -14,3 +14,14 @@ services:
     ports:
       - "8081:8081"
     user: redis
+  postgres:
+    container_name: postgres
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: cinema_admin
+      POSTGRES_PASSWORD: cinema_password
+      POSTGRES_DB: cinema_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
