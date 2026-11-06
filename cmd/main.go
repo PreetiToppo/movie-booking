@@ -12,6 +12,7 @@ import (
 	"github.com/PreetiToppo/movie-booking/internal/adapters/redis"
 	"github.com/PreetiToppo/movie-booking/internal/booking"
 	"github.com/PreetiToppo/movie-booking/internal/utils"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -31,6 +32,8 @@ func main() {
 
 	mux.HandleFunc("PUT /sessions/{sessionID}/confirm", bookingHandler.ConfirmSession)
 	mux.HandleFunc("DELETE /sessions/{sessionID}", bookingHandler.ReleaseSession)
+
+	mux.Handle("GET /metrics", promhttp.Handler())
 
 	// 1. Wrap your mux in a custom http.Server
 	server := &http.Server{

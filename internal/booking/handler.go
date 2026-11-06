@@ -43,6 +43,9 @@ func (h *handler) HoldSeat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	SeatsBookedTotal.WithLabelValues(movieID).Inc()
+	// ------------------------------------
+
 	type holdResponse struct {
 		SessionID string `json:"session_id"`
 		MovieID   string `json:"movieID"`
