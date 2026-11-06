@@ -22,13 +22,22 @@ func main() {
 	mux.HandleFunc("GET /movies", listMovies)
 	mux.Handle("GET /", http.FileServer(http.Dir("static")))
 
+	// Get connection strings from environment variables (Docker)
+	redisAddr := os.Getenv("REDIS_ADDR")
+	if redisAddr == "" {
+		redisAddr = "localhost:6379"
+	}
+	
+	pgConnStr := os.Getenv("POSTGRES_URL")
+	if pgConnStr == "" {
+		pgConnStr = "postgres://cinema_admin:cinema_password@localhost:5432/cinema_db?sslmode=disable"
+	}
+
 	// Connect to Redis and Postgres
-	rdb := redis.NewClient("localhost:6379")
-	pgConnStr := "postgres://cinema_admin:cinema_password@localhost:5432/cinema_db?sslmode=disable"
+	rdb := redis.NewClient(redisAddr)
 	pgPool := postgres.NewClient(pgConnStr)
 
 	store := booking.NewRedisStore(rdb)
-	// Pass the pgPool to the Service
 	svc := booking.NewService(store, pgPool)
 
 	bookingHandler := booking.NewHandler(svc)
@@ -39,11 +48,13 @@ func main() {
 	mux.HandleFunc("DELETE /sessions/{sessionID}", bookingHandler.ReleaseSession)
 	mux.Handle("GET /metrics", promhttp.Handler())
 
+	// Setup Server
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: mux,
 	}
 
+	// Start server in a goroutine
 	go func() {
 		log.Println("Starting server on http://localhost:8080")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -51,6 +62,7 @@ func main() {
 		}
 	}()
 
+	// Wait for interrupt signal for graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
